@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Omorhie Calculator</title>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+        user-select: none;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #020617;
+        overflow: hidden;
+        cursor: none;
+        flex-direction: column;
+    }
+
+    /* 🔵 Spotlight besar mengikuti kursor */
+    .neon-pointer {
+        position: fixed;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0,140,255,0.9), rgba(0,140,255,0));
+        pointer-events: none;
+        filter: blur(70px);
+        z-index: -2;
+        transform: translate(-50%, -50%);
+    }
+
+    /* 🔹 Cursor Neon */
+    .cursor-dot {
+        position: fixed;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        pointer-events: none;
+        background: #00c8ff;
+        box-shadow: 0 0 15px #00c8ff;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+    }
+
+    /* 🎯 Container */
+    .container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 880px;
+        width: 100%;
+        padding: 10px;
+    }
+
+    /* 🔢 Kalkulator */
+    .calculator {
+        background: rgba(0, 30, 60, 0.65);
+        padding: 25px;
+        border-radius: 20px;
+        width: 330px;
+        color: white;
+        border: 2px solid #00aaff;
+        box-shadow: 0px 0px 25px #0099ff;
+    }
+
+    .display {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 13px;
+        border-radius: 12px;
+        font-size: 36px;
+        text-align: right;
+        margin-bottom: 18px;
+        height: 70px;
+        overflow: hidden;
+        border: 2px solid #00c8ff;
+        box-shadow: inset 0 0 15px #00a6ff;
+    }
+
+    .buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    button {
+        padding: 18px;
+        border: none;
+        background: rgba(0, 119, 255, 0.3);
+        border-radius: 12px;
+        font-size: 20px;
+        color: white;
+        cursor: none;
+        transition: 0.12s;
+        border: 1px solid #008cff;
+    }
+
+    button:hover {
+        background: rgba(0, 153, 255, 0.6);
+        transform: translateY(-3px);
+        box-shadow: 0 0 15px #00c8ff;
+    }
+
+    button:active {
+        transform: scale(0.92);
+        box-shadow: 0 0 25px #00c8ff;
+    }
+
+    .operator {
+        background: #008cff;
+        font-weight: bold;
+    }
+
+    /* 📜 Riwayat */
+    .history {
+        width: 250px;
+        padding: 15px;
+        border-radius: 18px;
+        background: rgba(0, 30, 60, 0.45);
+        color: white;
+        border: 2px solid #00aaff;
+        box-shadow: 0 0 20px #008cff;
+        max-height: 430px;
+        overflow-y: auto;
+    }
+
+    .history h3 {
+        text-align: center;
+        margin-top: 0;
+        letter-spacing: 1px;
+        text-shadow: 0 0 10px #00ccff;
+    }
+
+    .history-item {
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .clear-history {
+        margin-top: 10px;
+        width: 100%;
+        background: #ff003c;
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        cursor: none;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 0 15px #ff003c;
+    }
+
+    .clear-history:hover {
+        background: #ff3366;
+        box-shadow: 0 0 25px #ff003c;
+    }
+
+
+
+/* 🌊 GLOW NEON WAVE BACKGROUND */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0,140,255,0.25) 0%, transparent 70%);
+    animation: waveMove 9s infinite linear;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: -5;
+}
+body::after {
+    animation-duration: 13s;
+    opacity: 0.25;
+}
+
+@keyframes waveMove {
+    from { transform: translate(-25%, -25%) rotate(0deg); }
+    to { transform: translate(-25%, -25%) rotate(360deg); }
+}
+
+
+/* ✅ RESPONSIVE MOBILE */
+@media (max-width: 600px) {
+    body {
+        cursor: auto;
+        overflow: auto;
+    }
+
+    .cursor-dot,
+    .neon-pointer {
+        display: none;
+    }
+
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .calculator {
+        width: 100%;
+        max-width: 380px;
+    }
+
+    .display {
+        font-size: 28px;
+        height: 58px;
+    }
+
+    button {
+        padding: 14px;
+        font-size: 18px;
+    }
+
+    .history {
+        width: 90%;
+        max-height: 220px;
+        margin-top: 10px;
+    }
+}
+</style>
+
+</head>
+<body>
+    <!-- 🌊 REAL NEON WAVE BACKGROUND -->
+<div class="wave-wrapper">
+  <svg class="wave" viewBox="0 0 1440 320">
+    <path id="wavePath" fill="rgba(0, 140, 255, 0.35)"
+      d="M0,160 C240,220 380,80 720,130 C1050,180 1260,90 1440,160 L1440,330 L0,330 Z">
+    </path>
+  </svg>
+</div>
+
+
+<div class="neon-pointer" id="neonPointer"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<div class="container">
+
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+
+        <div class="buttons">
+            <button onclick="clearDisplay()">🗑</button>
+            <button onclick="percent()">%</button>
+            <button onclick="append('/')">/</button>
+            <button onclick="append('*')">×</button>
+            <button onclick="deleteChar()"><i data-lucide="arrow-left"></i></button>
+
+
+            <button onclick="append('7')">7</button>
+            <button onclick="append('8')">8</button>
+            <button onclick="append('9')">9</button>
+            <button class="operator" onclick="append('-')">−</button>
+
+            <button onclick="append('4')">4</button>
+            <button onclick="append('5')">5</button>
+            <button onclick="append('6')">6</button>
+            <button class="operator" onclick="append('+')">+</button>
+
+            <button onclick="append('1')">1</button>
+            <button onclick="append('2')">2</button>
+            <button onclick="append('3')">3</button>
+            <button class="operator" onclick="calculate()">=</button>
+
+            <button onclick="append('0')" style="grid-column: span 2;">0</button>
+            <button onclick="append('.')">.</button>
+        </div>
+    </div>
+
+    <div class="history">
+        <h3>Riwayat</h3>
+        <div id="historyList"></div>
+        <button class="clear-history" onclick="clearHistory()">🗑 Clear Riwayat</button>
+    </div>
+</div>
+
+<script>
+    const display = document.getElementById("display");
+    const historyList = document.getElementById("historyList");
+    const neon = document.getElementById("neonPointer");
+    const cursorDot = document.getElementById("cursorDot");
+
+    function append(char) {
+        if (display.innerText === "0") display.innerText = "";
+        display.innerText += char;
+    }
+
+    function clearDisplay() {
+        display.innerText = "0";
+    }
+
+    function deleteChar() {
+        display.innerText = display.innerText.slice(0, -1);
+        if (display.innerText === "") display.innerText = "0";
+    }
+
+function calculate(e) {
+    try {
+        // Eval input (pastikan input hanya berisi angka/operasi yang valid)
+        const result = eval(display.innerText);
+
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.textContent = `${display.innerText} = ${result}`;
+        historyList.prepend(item);
+
+        display.innerText = result;
+
+        // Dapatkan posisi partikel: prioritas ke event, fallback ke mouseX/mouseY
+        const px = (e && typeof e.clientX === 'number') ? e.clientX : mouseX;
+        const py = (e && typeof e.clientY === 'number') ? e.clientY : mouseY;
+
+        // Hanya spawn jika ada koordinat valid (non-zero)
+        if (typeof px === 'number' && typeof py === 'number') {
+            spawnParticles(px, py);
+        }
+
+    } catch (err) {
+        // Untuk debugging sementara (opsional): console.error(err);
+        display.innerText = "Error";
+        // kamu bisa menampilkan pesan lebih ramah, mis. "Input tidak valid"
+    }
+}
+
+    function clearHistory() {
+        historyList.innerHTML = "";
+    }
+
+    /* Cursor Movement Easing */
+    let mouseX = 0, mouseY = 0;
+    let dotX = 0, dotY = 0;
+
+    document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        neon.style.left = `${mouseX}px`;
+        neon.style.top = `${mouseY}px`;
+    });
+
+    function animateCursor() {
+        dotX += (mouseX - dotX) * 0.18;
+        dotY += (mouseY - dotY) * 0.18;
+
+        cursorDot.style.left = `${dotX}px`;
+        cursorDot.style.top = `${dotY}px`;
+
+        requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    /* ✨ FIXED: Particle effect muncul */
+    function spawnParticles(x, y) {
+        for (let i = 0; i < 10; i++) {
+            const p = document.createElement("div");
+            p.style.position = "fixed";
+            p.style.width = "6px";
+            p.style.height = "6px";
+            p.style.borderRadius = "50%";
+            p.style.background = "#00c8ff";
+            p.style.pointerEvents = "none";
+            p.style.left = x + "px";
+            p.style.top = y + "px";
+            p.style.opacity = 1;
+            p.style.boxShadow = "0 0 10px #00c8ff";
+
+            document.body.appendChild(p);
+
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 3 + Math.random() * 4;
+
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+
+            function move() {
+                p.style.left = `${parseFloat(p.style.left) + vx}px`;
+                p.style.top = `${parseFloat(p.style.top) + vy}px`;
+                p.style.opacity -= 0.03;
+
+                if (p.style.opacity <= 0) {
+                    p.remove();
+                } else {
+                    requestAnimationFrame(move);
+                }
+            }
+
+            requestAnimationFrame(move);
+        }
+    }
+
+    function percent() {
+    let exp = display.innerText;
+
+    // Jika hanya angka → langsung jadikan persen
+    if (!exp.includes("+") && !exp.includes("-") && !exp.includes("*") && !exp.includes("/")) {
+        display.innerText = parseFloat(exp) / 100;
+        return;
+    }
+
+    // Jika ada operator → hitung persen dari angka pertama
+    const match = exp.match(/([\d.]+)\s*([+\-*/])\s*([\d.]+)$/);
+
+    if (!match) return;
+
+    let a = parseFloat(match[1]);
+    let operator = match[2];
+    let b = parseFloat(match[3]);
+
+    let percentValue = (a * b) / 100;
+
+    display.innerText = `${a}${operator}${percentValue}`;
+}
+
+
+    lucide.createIcons();
+</script>
+
+
+</body>
+</html>
