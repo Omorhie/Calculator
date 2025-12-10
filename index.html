@@ -1,433 +1,187 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Omorhie Calculator</title>
+<!DOCTYPE html> <!-- 1: Menentukan dokumen ini adalah HTML5 -->
+<html lang="id"> <!-- 2: Tag root; atribut lang="id" menunjukkan bahasa Indonesia -->
+<head> <!-- 3: Bagian head berisi metadata dan resource -->
+  <meta charset="UTF-8" /> <!-- 4: Menetapkan encoding karakter ke UTF-8 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- 5: Membuat halaman responsif pada perangkat mobile -->
+  <title>Omorhie Calc</title> <!-- 6: Judul halaman yang muncul di tab browser -->
 
-<!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script> <!-- 7: Memuat pustaka ikon Lucide dari CDN -->
 
-<style>
-    * {
-        box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
-        user-select: none;
+  <style>  
+    body { /* 9: Aturan styling untuk elemen <body> */
+      font-family: Arial, sans-serif; /* 10: Menetapkan font default */
+      background-color: rgb(255, 255, 255); /* 11: Warna latar belakang putih */
+      display: flex; /* 12: Mengaktifkan flexbox untuk memusatkan konten */
+      justify-content: center; /* 13: Memusatkan secara horizontal */
+      align-items: center; /* 14: Memusatkan secara vertikal */
+      height: 100vh; /* 15: Tinggi body 100% viewport height sehingga pemusatan vertikal bekerja */
+      margin: 0; /* 16: Menghapus margin default browser */
     }
 
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: #020617;
-        overflow: hidden;
-        cursor: none;
-        flex-direction: column;
+    .calculator { /* 17: Styling untuk container kalkulator */
+      width: 320px; /* 18: Lebar tetap 320px */
+      backdrop-filter: blur(18px); /* 19: Efek blur pada latar belakang elemen (di belakang elemen) */
+      -webkit-backdrop-filter: blur(18px); /* 20: Prefix untuk Safari/WebKit */
+      background: rgba(255, 255, 255, 0.15); /* 21: Latar semi-transparan */
+      padding: 20px; /* 22: Jarak dalam (padding) 20px */
+      border-radius: 20px; /* 23: Sudut membulat */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* 24: Bayangan untuk memberi kedalaman */
+      border: 1px solid rgba(255, 255, 255, 0.25); /* 25: Border tipis semi-transparan */
     }
 
-    /* 🔵 Spotlight besar mengikuti kursor */
-    .neon-pointer {
-        position: fixed;
-        width: 280px;
-        height: 280px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(0,140,255,0.9), rgba(0,140,255,0));
-        pointer-events: none;
-        filter: blur(70px);
-        z-index: -2;
-        transform: translate(-50%, -50%);
+    .display { /* 26: Styling untuk layar display kalkulator */
+      width: 100%; /* 27: Lebar penuh container */
+      height: 70px; /* 28: Tinggi 70px */
+      background: rgba(206, 206, 206, 0.6); /* 29: Latar abu semi-transparan untuk area display */
+      color: #000000; /* 30: Warna teks hitam */
+      text-align: right; /* 31: Teks rata kanan (seperti angka pada kalkulator) */
+      padding: 18px; /* 32: Padding internal */
+      font-size: 28px; /* 33: Ukuran font besar untuk angka */
+      border-radius: 12px; /* 34: Sudut membulat pada display */
+      box-sizing: border-box; /* 35: Memastikan padding tidak menambah lebar total */
+      overflow-x: auto; /* 36: Jika teks panjang, tampilkan scroll horizontal */
+      font-weight: bold; /* 37: Membuat teks tebal */
+      border: 1px solid rgba(255, 255, 255, 0.2); /* 38: Border tipis lagi */
     }
 
-    /* 🔹 Cursor Neon */
-    .cursor-dot {
-        position: fixed;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        pointer-events: none;
-        background: #00c8ff;
-        box-shadow: 0 0 15px #00c8ff;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
+    .buttons { /* 39: Container grid untuk tombol-tombol */
+      margin-top: 18px; /* 40: Jarak atas antara display dan tombol */
+      display: grid; /* 41: Menggunakan CSS grid untuk tata letak tombol */
+      grid-template-columns: repeat(4, 1fr); /* 42: 4 kolom dengan lebar sama */
+      gap: 12px; /* 43: Jarak antar tombol */
     }
 
-    /* 🎯 Container */
-    .container {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        justify-content: center;
-        max-width: 880px;
-        width: 100%;
-        padding: 10px;
+    button { /* 44: Styling umum untuk semua tombol */
+      padding: 16px; /* 45: Ruang dalam tombol */
+      font-size: 20px; /* 46: Ukuran huruf tombol */
+      border: none; /* 47: Menghilangkan border default */
+      border-radius: 12px; /* 48: Sudut tombol membulat */
+      background: rgba(255, 255, 255, 0.25); /* 49: Latar tombol semi-transparan */
+      color: rgb(0, 0, 0); /* 50: Warna teks tombol hitam */
+      cursor: pointer; /* 51: Kursor berubah jadi pointer saat hover */
+      transition: 0.2s; /* 52: Transisi halus untuk perubahan gaya */
+      backdrop-filter: blur(10px); /* 53: Efek blur pada latar belakang tombol */
+      font-weight: bold; /* 54: Teks tombol tebal */
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2); /* 55: Bayangan tombol kecil */
+      font-weight: 500; /* 56: (duplikasi font-weight, tapi tidak masalah) */
     }
 
-    /* 🔢 Kalkulator */
-    .calculator {
-        background: rgba(0, 30, 60, 0.65);
-        padding: 25px;
-        border-radius: 20px;
-        width: 330px;
-        color: white;
-        border: 2px solid #00aaff;
-        box-shadow: 0px 0px 25px #0099ff;
+    button:hover { /* 57: Efek saat kursor melewati tombol */
+      background: rgba(255, 255, 255, 0.4); /* 58: Latar menjadi lebih terang */
+      transform: translateY(-3px); /* 59: Tombol naik sedikit */
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* 60: Bayangan lebih besar saat hover */
     }
 
-    .display {
-        background: rgba(0, 0, 0, 0.6);
-        padding: 13px;
-        border-radius: 12px;
-        font-size: 36px;
-        text-align: right;
-        margin-bottom: 18px;
-        height: 70px;
-        overflow: hidden;
-        border: 2px solid #00c8ff;
-        box-shadow: inset 0 0 15px #00a6ff;
+    button:active { /* 61: Efek saat tombol ditekan */
+      transform: scale(0.92); /* 62: Tombol mengecil sedikit saat klik */
     }
 
-    .buttons {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
+    .operator { /* 63: Styling tambahan untuk tombol operator (+ - * / . %) */
+      background: rgba(128, 128, 128, 0.5); /* 64: Warna latar operator */
     }
 
-    button {
-        padding: 18px;
-        border: none;
-        background: rgba(0, 119, 255, 0.3);
-        border-radius: 12px;
-        font-size: 20px;
-        color: white;
-        cursor: none;
-        transition: 0.12s;
-        border: 1px solid #008cff;
+    .operator:hover { /* 65: Hover khusus operator */
+      background: rgba(255, 255, 255, 0.7); /* 66: Operator jadi terang saat hover */
     }
 
-    button:hover {
-        background: rgba(0, 153, 255, 0.6);
-        transform: translateY(-3px);
-        box-shadow: 0 0 15px #00c8ff;
+    .equal { /* 67: Styling khusus untuk tombol "=" */
+      background: rgba(76, 175, 80, 0.7); /* 68: Latar hijau (tombol hasil) */
+      color: black; /* 69: Teks hitam */
     }
 
-    button:active {
-        transform: scale(0.92);
-        box-shadow: 0 0 25px #00c8ff;
+    .equal:hover { /* 70: Hover untuk tombol "=" */
+      background: rgba(255, 255, 255, 0.7); /* 71: Menjadi terang saat hover (catatan: mengubah warna asal hijau) */
     }
 
-    .operator {
-        background: #008cff;
-        font-weight: bold;
+    .trash { /* 72: Styling untuk tombol clear (icon trash) */
+        background: rgb(205, 29, 29); /* 73: Latar merah */
     }
 
-    /* 📜 Riwayat */
-    .history {
-        width: 250px;
-        padding: 15px;
-        border-radius: 18px;
-        background: rgba(0, 30, 60, 0.45);
-        color: white;
-        border: 2px solid #00aaff;
-        box-shadow: 0 0 20px #008cff;
-        max-height: 430px;
-        overflow-y: auto;
+    .trash:hover { /* 74: Hover untuk tombol trash */
+        background: rgba(255, 255, 255, 0.7); /* 75: Menjadi terang saat hover */
     }
+  </style> <!-- 76: Akhir blok CSS -->
+</head> <!-- 77: Akhir head -->
 
-    .history h3 {
-        text-align: center;
-        margin-top: 0;
-        letter-spacing: 1px;
-        text-shadow: 0 0 10px #00ccff;
-    }
+<body> <!-- 78: Awal body -->
 
-    .history-item {
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.3);
-    }
+  <div class="calculator"> <!-- 79: Container utama kalkulator -->
+    <div class="display" id="display">0</div> <!-- 80: Elemen display yang menampilkan angka; id="display" dipakai oleh JS; default "0" -->
 
-    .clear-history {
-        margin-top: 10px;
-        width: 100%;
-        background: #ff003c;
-        border: none;
-        padding: 10px;
-        border-radius: 10px;
-        cursor: none;
-        color: white;
-        font-weight: bold;
-        box-shadow: 0 0 15px #ff003c;
-    }
+    <div class="buttons"> <!-- 81: Grid tombol -->
 
-    .clear-history:hover {
-        background: #ff3366;
-        box-shadow: 0 0 25px #ff003c;
-    }
+      <!-- BARIS 1 -->
+      <button id="clear" class="trash"><i data-lucide="trash-2"></i></button> <!-- 82: Tombol clear dengan icon lucide (trash-2); id="clear" digunakan JS -->
+      <button>(</button> <!-- 83: Tombol "(" -->
+      <button>)</button> <!-- 84: Tombol ")" -->
+      <button class="operator">%</button> <!-- 85: Tombol persen (operator) -->
 
+      <!-- BARIS 2 -->
+      <button>7</button> <!-- 86: Tombol angka 7 -->
+      <button>8</button> <!-- 87: Tombol angka 8 -->
+      <button>9</button> <!-- 88: Tombol angka 9 -->
+      <button class="operator">/</button> <!-- 89: Tombol pembagian -->
 
+      <!-- BARIS 3 -->
+      <button>4</button> <!-- 90: Tombol angka 4 -->
+      <button>5</button> <!-- 91: Tombol angka 5 -->
+      <button>6</button> <!-- 92: Tombol angka 6 -->
+      <button class="operator">*</button> <!-- 93: Tombol perkalian -->
 
-/* 🌊 GLOW NEON WAVE BACKGROUND */
-body::before,
-body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(0,140,255,0.25) 0%, transparent 70%);
-    animation: waveMove 9s infinite linear;
-    opacity: 0.35;
-    pointer-events: none;
-    z-index: -5;
-}
-body::after {
-    animation-duration: 13s;
-    opacity: 0.25;
-}
+      <!-- BARIS 4 -->
+      <button>1</button> <!-- 94: Tombol angka 1 -->
+      <button>2</button> <!-- 95: Tombol angka 2 -->
+      <button>3</button> <!-- 96: Tombol angka 3 -->
+      <button class="operator">-</button> <!-- 97: Tombol pengurangan -->
 
-@keyframes waveMove {
-    from { transform: translate(-25%, -25%) rotate(0deg); }
-    to { transform: translate(-25%, -25%) rotate(360deg); }
-}
+      <!-- BARIS 5 -->
+      <button>0</button> <!-- 98: Tombol angka 0 -->
+      <button class="equal">=</button> <!-- 99: Tombol sama dengan (hitung hasil) -->
+      <button class="operator">.</button> <!-- 100: Tombol desimal titik -->
+      <button class="operator">+</button> <!-- 101: Tombol penjumlahan -->
+    </div> <!-- 102: Akhir grid tombol -->
+  </div> <!-- 103: Akhir container kalkulator -->
 
+  <script> <!-- 104: Awal blok JavaScript -->
+    lucide.createIcons(); /* 105: Memproses dan menggambar ikon Lucide yang ada pada halaman (mengaktifkan icon render) */
+    const display = document.getElementById("display"); /* 106: Mengambil elemen display untuk dimanipulasi lewat JS */
+    const buttons = document.querySelectorAll("button"); /* 107: Mengambil semua elemen <button> untuk menambahkan event listener */
 
-/* ✅ RESPONSIVE MOBILE */
-@media (max-width: 600px) {
-    body {
-        cursor: auto;
-        overflow: auto;
-    }
+    buttons.forEach(btn => { /* 108: Loop setiap tombol */
+      btn.addEventListener("click", () => { /* 109: Menambahkan listener klik untuk tiap tombol */
+        const value = btn.textContent.trim(); /* 110: Mengambil teks tombol dan menghapus spasi di ujungnya */
 
-    .cursor-dot,
-    .neon-pointer {
-        display: none;
-    }
-
-    .container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .calculator {
-        width: 100%;
-        max-width: 380px;
-    }
-
-    .display {
-        font-size: 28px;
-        height: 58px;
-    }
-
-    button {
-        padding: 14px;
-        font-size: 18px;
-    }
-
-    .history {
-        width: 90%;
-        max-height: 220px;
-        margin-top: 10px;
-    }
-}
-</style>
-
-</head>
-<body>
-    <!-- 🌊 REAL NEON WAVE BACKGROUND -->
-<div class="wave-wrapper">
-  <svg class="wave" viewBox="0 0 1440 320">
-    <path id="wavePath" fill="rgba(0, 140, 255, 0.35)"
-      d="M0,160 C240,220 380,80 720,130 C1050,180 1260,90 1440,160 L1440,330 L0,330 Z">
-    </path>
-  </svg>
-</div>
-
-
-<div class="neon-pointer" id="neonPointer"></div>
-<div class="cursor-dot" id="cursorDot"></div>
-
-<div class="container">
-
-    <div class="calculator">
-        <div class="display" id="display">0</div>
-
-        <div class="buttons">
-            <button onclick="clearDisplay()">🗑</button>
-            <button onclick="percent()">%</button>
-            <button onclick="append('/')">/</button>
-            <button onclick="append('*')">×</button>
-            <button onclick="deleteChar()"><i data-lucide="arrow-left"></i></button>
-
-
-            <button onclick="append('7')">7</button>
-            <button onclick="append('8')">8</button>
-            <button onclick="append('9')">9</button>
-            <button class="operator" onclick="append('-')">−</button>
-
-            <button onclick="append('4')">4</button>
-            <button onclick="append('5')">5</button>
-            <button onclick="append('6')">6</button>
-            <button class="operator" onclick="append('+')">+</button>
-
-            <button onclick="append('1')">1</button>
-            <button onclick="append('2')">2</button>
-            <button onclick="append('3')">3</button>
-            <button class="operator" onclick="calculate()">=</button>
-
-            <button onclick="append('0')" style="grid-column: span 2;">0</button>
-            <button onclick="append('.')">.</button>
-        </div>
-    </div>
-
-    <div class="history">
-        <h3>Riwayat</h3>
-        <div id="historyList"></div>
-        <button class="clear-history" onclick="clearHistory()">🗑 Clear Riwayat</button>
-    </div>
-</div>
-
-<script>
-    const display = document.getElementById("display");
-    const historyList = document.getElementById("historyList");
-    const neon = document.getElementById("neonPointer");
-    const cursorDot = document.getElementById("cursorDot");
-
-    function append(char) {
-        if (display.innerText === "0") display.innerText = "";
-        display.innerText += char;
-    }
-
-    function clearDisplay() {
-        display.innerText = "0";
-    }
-
-    function deleteChar() {
-        display.innerText = display.innerText.slice(0, -1);
-        if (display.innerText === "") display.innerText = "0";
-    }
-
-function calculate(e) {
-    try {
-        // Eval input (pastikan input hanya berisi angka/operasi yang valid)
-        const result = eval(display.innerText);
-
-        const item = document.createElement("div");
-        item.className = "history-item";
-        item.textContent = `${display.innerText} = ${result}`;
-        historyList.prepend(item);
-
-        display.innerText = result;
-
-        // Dapatkan posisi partikel: prioritas ke event, fallback ke mouseX/mouseY
-        const px = (e && typeof e.clientX === 'number') ? e.clientX : mouseX;
-        const py = (e && typeof e.clientY === 'number') ? e.clientY : mouseY;
-
-        // Hanya spawn jika ada koordinat valid (non-zero)
-        if (typeof px === 'number' && typeof py === 'number') {
-            spawnParticles(px, py);
+        if (btn.id === "clear") { /* 111: Jika tombol yang diklik adalah tombol clear (id="clear") */
+          display.textContent = "0"; /* 112: Reset isi display menjadi "0" */
+        } 
+        
+        else if (value === "=") { /* 113: Jika tombol "=" ditekan */
+          try {
+            display.textContent = eval(display.textContent); /* 114: Menggunakan eval untuk menghitung ekspresi yang ada di display */
+          } catch {
+            display.textContent = "Error"; /* 115: Jika eval melempar error (mis. ekspresi tidak valid), tampilkan "Error" */
+          }
+        } 
+        
+        else if (value === "%") { /* 116: Jika tombol "%" ditekan */
+          try {
+            display.textContent = eval(display.textContent) / 100; /* 117: Hitung nilai ekspresi lalu bagi 100 */
+          } catch {
+            display.textContent = "Error"; /* 118: Tangani error */
+          }
         }
 
-    } catch (err) {
-        // Untuk debugging sementara (opsional): console.error(err);
-        display.innerText = "Error";
-        // kamu bisa menampilkan pesan lebih ramah, mis. "Input tidak valid"
-    }
-}
-
-    function clearHistory() {
-        historyList.innerHTML = "";
-    }
-
-    /* Cursor Movement Easing */
-    let mouseX = 0, mouseY = 0;
-    let dotX = 0, dotY = 0;
-
-    document.addEventListener("mousemove", (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        neon.style.left = `${mouseX}px`;
-        neon.style.top = `${mouseY}px`;
+        else { /* 119: Untuk tombol-tombol lain (angka, operator, tanda kurung, titik) */
+          if (display.textContent === "0") { /* 120: Jika display masih "0" (nilai default) */
+            display.textContent = value; /* 121: Ganti "0" dengan nilai tombol (menghindari leading zero) */
+          } else {
+            display.textContent += value; /* 122: Jika bukan "0", tambahkan teks tombol ke akhir display */
+          }
+        }
+      });
     });
+  </script> <!-- 123: Akhir blok JavaScript -->
 
-    function animateCursor() {
-        dotX += (mouseX - dotX) * 0.18;
-        dotY += (mouseY - dotY) * 0.18;
-
-        cursorDot.style.left = `${dotX}px`;
-        cursorDot.style.top = `${dotY}px`;
-
-        requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
-
-    /* ✨ FIXED: Particle effect muncul */
-    function spawnParticles(x, y) {
-        for (let i = 0; i < 10; i++) {
-            const p = document.createElement("div");
-            p.style.position = "fixed";
-            p.style.width = "6px";
-            p.style.height = "6px";
-            p.style.borderRadius = "50%";
-            p.style.background = "#00c8ff";
-            p.style.pointerEvents = "none";
-            p.style.left = x + "px";
-            p.style.top = y + "px";
-            p.style.opacity = 1;
-            p.style.boxShadow = "0 0 10px #00c8ff";
-
-            document.body.appendChild(p);
-
-            const angle = Math.random() * Math.PI * 2;
-            const speed = 3 + Math.random() * 4;
-
-            const vx = Math.cos(angle) * speed;
-            const vy = Math.sin(angle) * speed;
-
-            function move() {
-                p.style.left = `${parseFloat(p.style.left) + vx}px`;
-                p.style.top = `${parseFloat(p.style.top) + vy}px`;
-                p.style.opacity -= 0.03;
-
-                if (p.style.opacity <= 0) {
-                    p.remove();
-                } else {
-                    requestAnimationFrame(move);
-                }
-            }
-
-            requestAnimationFrame(move);
-        }
-    }
-
-    function percent() {
-    let exp = display.innerText;
-
-    // Jika hanya angka → langsung jadikan persen
-    if (!exp.includes("+") && !exp.includes("-") && !exp.includes("*") && !exp.includes("/")) {
-        display.innerText = parseFloat(exp) / 100;
-        return;
-    }
-
-    // Jika ada operator → hitung persen dari angka pertama
-    const match = exp.match(/([\d.]+)\s*([+\-*/])\s*([\d.]+)$/);
-
-    if (!match) return;
-
-    let a = parseFloat(match[1]);
-    let operator = match[2];
-    let b = parseFloat(match[3]);
-
-    let percentValue = (a * b) / 100;
-
-    display.innerText = `${a}${operator}${percentValue}`;
-}
-
-
-    lucide.createIcons();
-</script>
-
-
-</body>
-</html>
+</body> <!-- 124: Akhir body -->
+</html> <!-- 125: Akhir dokumen HTML -->
