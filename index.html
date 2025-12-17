@@ -121,7 +121,7 @@
       <button>7</button> <!-- 86: Tombol angka 7 -->
       <button>8</button> <!-- 87: Tombol angka 8 -->
       <button>9</button> <!-- 88: Tombol angka 9 -->
-      <button class="operator">/</button> <!-- 89: Tombol pembagian -->
+      <button class="operator">÷</button> <!-- 89: Tombol pembagian -->
 
       <!-- BARIS 3 -->
       <button>4</button> <!-- 90: Tombol angka 4 -->
@@ -156,18 +156,17 @@
           display.textContent = "0"; /* 112: Reset isi display menjadi "0" */
         } 
         
-      else if (value === "=") {                       // Jika tombol "=" ditekan
-        try {                                         // Coba jalankan perhitungan
-         const expression = display.textContent      // Ambil teks dari layar kalkulator
-          .replace(/x/g, "*");                      // Ganti semua "x" menjadi "*" agar bisa dihitung eval
-        display.textContent = eval(expression);     // Hitung ekspresi dan tampilkan hasilnya
-      } catch {                                     // Jika terjadi error (sintaks salah, dll)
-        display.textContent = "Error";              // Tampilkan tulisan "Error" di layar
+        else if (value === "=") {                       // Jika tombol "=" ditekan
+          try {                                         // Coba jalankan perhitungan
+          const expression = display.textContent      // Ambil isi layar
+            .replace(/x/g, "*")                       // Ubah "x" → "*"
+            .replace(/÷/g, "/");                      // Ubah "÷" → "/"
+            display.textContent = eval(expression);     // Hitung hasil
+        } catch {                                     // Jika ada error
+            display.textContent = "Error";              // Tampilkan Error
       }
   }
-
-
-        
+  
         else if (value === "%") { /* 116: Jika tombol "%" ditekan */
           try {
             display.textContent = eval(display.textContent) / 100; /* 117: Hitung nilai ekspresi lalu bagi 100 */
