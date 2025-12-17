@@ -127,7 +127,7 @@
       <button>4</button> <!-- 90: Tombol angka 4 -->
       <button>5</button> <!-- 91: Tombol angka 5 -->
       <button>6</button> <!-- 92: Tombol angka 6 -->
-      <button class="operator">*</button> <!-- 93: Tombol perkalian -->
+      <button class="operator">x</button> <!-- 93: Tombol perkalian -->
 
       <!-- BARIS 4 -->
       <button>1</button> <!-- 94: Tombol angka 1 -->
@@ -156,13 +156,17 @@
           display.textContent = "0"; /* 112: Reset isi display menjadi "0" */
         } 
         
-        else if (value === "=") { /* 113: Jika tombol "=" ditekan */
-          try {
-            display.textContent = eval(display.textContent); /* 114: Menggunakan eval untuk menghitung ekspresi yang ada di display */
-          } catch {
-            display.textContent = "Error"; /* 115: Jika eval melempar error (mis. ekspresi tidak valid), tampilkan "Error" */
-          }
-        } 
+      else if (value === "=") {                       // Jika tombol "=" ditekan
+        try {                                         // Coba jalankan perhitungan
+         const expression = display.textContent      // Ambil teks dari layar kalkulator
+          .replace(/x/g, "*");                      // Ganti semua "x" menjadi "*" agar bisa dihitung eval
+        display.textContent = eval(expression);     // Hitung ekspresi dan tampilkan hasilnya
+      } catch {                                     // Jika terjadi error (sintaks salah, dll)
+        display.textContent = "Error";              // Tampilkan tulisan "Error" di layar
+      }
+  }
+
+
         
         else if (value === "%") { /* 116: Jika tombol "%" ditekan */
           try {
