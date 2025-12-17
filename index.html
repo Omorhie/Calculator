@@ -167,13 +167,48 @@
       }
   }
   
-        else if (value === "%") { /* 116: Jika tombol "%" ditekan */
-          try {
-            display.textContent = eval(display.textContent) / 100; /* 117: Hitung nilai ekspresi lalu bagi 100 */
-          } catch {
-            display.textContent = "Error"; /* 118: Tangani error */
-          }
-        }
+else if (value === "%") {                       // Jika tombol persen (%) ditekan
+  try {                                         // Coba jalankan logika persen
+    let text = display.textContent              // Ambil teks dari layar kalkulator
+      .replace(/x/g, "*")                       // Ubah simbol x menjadi *
+      .replace(/÷/g, "/");                      // Ubah simbol ÷ menjadi /
+
+    // Ambil pola: angka-kiri operator angka-kanan
+    const match = text.match(/(.+)([+\-*/])(\d+(\.\d+)?)$/); 
+    // Contoh yang cocok: "100*90", "100+10", "200/50"
+
+    if (!match) {                               // Jika tidak ada operator sebelumnya
+      display.textContent = eval(text) / 100;  // Hitung angka lalu bagi 100
+      return;                                   // Hentikan proses di sini
+    }
+
+    const full = match[0];                      // Ekspresi lengkap, contoh: "100*90"
+    const left = match[1];                      // Bagian kiri, contoh: "100"
+    const operator = match[2];                  // Operator: + - * /
+    const right = match[3];                     // Angka kanan, contoh: "90"
+
+    let result;                                 // Variabel untuk menyimpan hasil
+
+    const A = eval(left);                       // Nilai angka kiri (A)
+    const B = Number(right);                    // Nilai angka kanan (B)
+
+    if (operator === "+" || operator === "-") { // Jika operator + atau -
+      result = operator === "+"                 // Jika +
+        ? A + (A * B / 100)                     // A + (A × B%)
+        : A - (A * B / 100);                    // A - (A × B%)
+    } else if (operator === "*") {               // Jika operator perkalian
+      result = A * (B / 100);                   // A × (B%)
+    } else if (operator === "/") {               // Jika operator pembagian
+      result = A / (B / 100);                   // A ÷ (B%)
+    }
+
+    display.textContent = result;                // Tampilkan hasil ke layar
+  } catch {                                     // Jika terjadi error
+    display.textContent = "Error";               // Tampilkan "Error"
+  }
+}
+
+
 
         else { /* 119: Untuk tombol-tombol lain (angka, operator, tanda kurung, titik) */
           if (display.textContent === "0") { /* 120: Jika display masih "0" (nilai default) */
